@@ -333,7 +333,7 @@ class Taobao():
             return 1
     # 19. 删除订单号为空或订单号重复的行
     def delBlankOrderRow(self,xlsPath):
-        while (Tru  e):
+        while (True):
             # 接收错误行号
             line = self.chkRepeOrderInXls(xlsPath)
             if line > 0:

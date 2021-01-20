@@ -279,7 +279,8 @@ def repeTaskCheck():
                 sqlFormat = 'wangwangId=' + '\'' + wangWangId + '\'' + 'and shopName=' + '\'' + shopName + '\'' + 'and date >' + '\'' + lastMonthDate + '\''
                 sql = 'select wangwangId,shopName,orderId,date from orderInfo where isDel = 0 and {0}'.format(sqlFormat)
                 sqlRes = mysql_conn(sql)
-                print(wangWangId, shopName, taskDate,lastMonthDate)
+                # 删除用户上传的任务检查表
+                os.remove(uploadPath)
                 if len(sqlRes) > 0:
                     tp = (wangWangId,shopName,taskDate,sqlRes[0][2],sqlRes[0][3])
                     repeTaskList.append(tp)
