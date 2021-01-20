@@ -356,20 +356,16 @@ def importData():
 
             # 备份工作目录
             print('【备份工作目录】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
+            tmid = str(time.strftime('%Y_%m_%d_%H_%M_%S'))
+            workBakDir = 'work-' + tmid
             if taobao.getSystemPlatform() == 'Windows':
-                tmid = str(time.strftime('%Y_%m_%d_%H_%M_%S'))
-                workBakDir = 'work-' + tmid
                 os.mkdir(workBakDir)
                 os.chdir(workBakDir)
                 workBakAbsDir = os.getcwd()
                 os.chdir(mainDir)
-                os.removedirs(workBakAbsDir)
                 print(workDir, workBakAbsDir)
             else:
-                tmid = str(time.strftime('%Y_%m_%d_%H_%M_%S'))
-                workBakDir = 'work-' + tmid
                 workBakAbsDir = '/boss/soft/taobao/' + workBakDir
-                os.removedirs(workBakAbsDir)
                 print(workDir, workBakAbsDir)
             shutil.copytree(workDir, workBakAbsDir)
             print('【备份工作目录】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
