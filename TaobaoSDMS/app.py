@@ -38,7 +38,7 @@ def index():
     maxPage = (mysql_conn(sql_row_count)[0][0] % page_show_count) / page_show_count if mysql_conn(sql_row_count)[0][
                                                                                            0] % page_show_count == 0 else int(
         mysql_conn(sql_row_count)[0][0] / page_show_count) + 1
-    sql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,handlerName,date from orderInfo where isDel = 0 order by id limit %s,%s' % (
+    sql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,handlerName,date from orderInfo where isDel = 0 order by date limit %s,%s' % (
         str((page - 1) * page_show_count), page_show_count)
     print('打印sql语句: ', sql)
     sqlRes = mysql_conn(sql)
@@ -129,22 +129,26 @@ def search():
         # 计算最大页数
         maxPage = count_max_page(tableName='orderInfo', pageSize=pageSize)
         paginateDict = paginate(page=page, size=pageSize)
-        sql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0} order by id limit {1},{2}'.format(
+        sql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0} order by date limit {1},{2}'.format(
             searchSql, paginateDict['offset'], paginateDict['limit'])
         sqlRes = mysql_conn(sql)
+        lastPage = paginateDict['before']
+        nextPage = paginateDict['next']
 
         # 计算分页订单总价格
+        priceSql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0} order by date'.format(
+            searchSql)
+        priceSqlRes = mysql_conn(priceSql)
         totalKdjPrice = 0
         totalYjPrice = 0
         totalRedPackets = 0
         totalSsyj = 0
-        for tp in sqlRes:
+        for tp in priceSqlRes:
             totalKdjPrice += tp[6]
             totalYjPrice += tp[7]
             totalRedPackets += tp[8]
             totalSsyj += tp[9]
-        lastPage = paginateDict['before']
-        nextPage = paginateDict['next']
+
         return render_template(
             'search.html',
             queryTotalCnt=queryTotalCnt,

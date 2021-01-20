@@ -66,7 +66,24 @@ if __name__ == '__main__':
         taobao.format_xls_name(xlsxAbsPath)
     print('【检查文件命名规范&重命名】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
 
-    # 3. 检查文件内容是否符合格式规范
+    # 3. 删除文件中所有订单号都在数据库中已存在的文件
+    xlsxList = taobao.get_path_xlsx(xlsDir)
+    print('【删除文件】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
+    for xlsx in xlsxList:
+        xlsxAbsPath = xlsDir + xlsx
+        # 删除订单号为空的行
+        taobao.delBlankOrderRow(xlsxAbsPath)
+        # * 打开excel
+        wb = xlrd.open_workbook(xlsxAbsPath)
+        # * 打开第一个sheet
+        ws = wb.sheet_by_index(0)
+        cnt = taobao.chkXlsOrderUniq(xlsxAbsPath)
+        if int(ws.nrows)-1 == cnt:
+            os.remove(xlsxAbsPath)
+            print('所有订单号均存在于数据库中，已删除文件',xlsxAbsPath)
+    print('【删除文件】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
+
+    # 4. 导入数据
     # 获取工作目录下所有xlsx文件名称
     xlsxList = taobao.get_path_xlsx(xlsDir)
     print('【文件导入】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
@@ -78,4 +95,5 @@ if __name__ == '__main__':
         cnt = int(taobao.importData(xlsxAbsPath))
         if cnt > 0:
             os.remove(xlsxAbsPath)
+            print('订单导入完毕，删除',xlsxAbsPath)
     print('【文件导入】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))

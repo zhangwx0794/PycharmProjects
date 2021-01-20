@@ -173,10 +173,17 @@ class Taobao():
         ws = wb.sheet_by_index(0)
         cnt = 0
         for line in range(1,ws.nrows):
-            colValue = ws.cell_value(rowx=line,colx=5)
+            # 获取订单号
+            colValue = str(ws.cell_value(rowx=line,colx=5)).strip()
             if colValue in orderIdLst:
                 # print(xlsPath,'订单号与数据库重复',colValue,'第',line,'行')
                 cnt += 1
+            else:
+                if cnt > 0:
+                    print(xlsPath,'在订单号重复的表格中竟然发现订单号[{0}]竟然没有插入数据里...'.format(colValue))
+                    orderList = ws.row_values(line)
+                    self.insertOrder(orderList,xlsPath)
+                    print('呜呜，既然被发现了，只能老老实实的插进数据库里~~~')
         return cnt
 
     # 10. 数据导入
@@ -364,7 +371,7 @@ class Taobao():
                 return -1
             for i in range(5, 10):
                 if not str(rowList[i]).replace('.', '').isdigit():
-                    # print('错误: 第',i+1,'列数据不规范，含有非数字或小数点字符!')
+                    print('错误: 第{0}行第{1}列数据不规范，含有非数字或小数点字符，或者为空!'.format(line+1,i+1))
                     return -2
         return 0
     # 21. 检测单张表是否有重复订单号，正常返回0，异常返回订单号所在行号
@@ -386,4 +393,35 @@ class Taobao():
             print(xlsPath,'捕捉到打开表异常',e)
             return -1
         return 0
+
+    # 22. 插入单条订单数据
+    def insertOrder(self,orderList,xlsPath):
+        xlsName = str(xlsPath).split('\\')[-1]
+        rowList = orderList
+        # * 校验当前行指定范围列数据是否完整
+        # 日期、经手人、店铺名称、宝贝名称、关键词、旺旺ID、订单号、客单价、佣金
+        sqlFormat = 'insert into orderInfo(shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date) values({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12})'
+        shopName = '\'' + str(rowList[1]) + '\''
+        goodsName = '\'' + str(rowList[2]) + '\''
+        goodsKey = '\'' + str(rowList[3]) + '\''
+        wangwangId = '\'' + str(rowList[4]).strip() + '\''
+        orderId = '\'' + str(rowList[5]).strip() + '\''
+        goodsPrice = rowList[6]
+        goodsYj = rowList[7]
+        redPackets = rowList[8]
+        ssyj = rowList[9]
+        handlerName = '\'' + str(rowList[10]) + '\''
+        opWechatId = '\'' + str(rowList[11]) + '\''
+        custName = '\'' + str(rowList[12]) + '\''
+        date = '\'' + str(re.compile('^\d{4}-\d{2}-\d{2}').findall(xlsName)[0]) + '\''
+        sql = sqlFormat.format(shopName, goodsName, goodsKey, wangwangId, orderId, goodsPrice, goodsYj,
+                               redPackets, ssyj, handlerName, opWechatId, custName, date)
+        # 根据订单号检查数据，如果不重复，则将表格中的数据插入数据库；0不存在  1存在
+        try:
+            # print('插入数据库……', sql)
+            self.sql_operation(sql)
+            print('插入单条订单信息到数据库成功，订单号[{0}]'.format(orderId))
+        except Exception as e:
+            print('订单号[{0}]插入数据库异常'.format(orderId))
+            return 0
 

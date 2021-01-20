@@ -28,7 +28,10 @@
         <input type="hidden" id="inputRole" name="role"/>
         <!-- 导出按钮， onclick事件绑定downloadStudentsExcel函数 -->
         <input class="btn btn-primary btn-sm" type="button" onclick="doSubmit()" value="查询" style="text-align: right"/>
-        <input class="btn btn-primary btn-sm" style="background-color: #67b168" type="button" value="导出Excel" onclick="download_excel()">
+        {% if formParameters|length > 0 %}
+            <input class="btn btn-primary btn-sm" style="background-color: #67b168" type="button" value="导出查询结果"
+                   onclick="download_excel()">
+        {% endif %}
     </form>
 </div>
 <div style="margin: 10px 10px;">
@@ -65,7 +68,7 @@
         <a class="btn btn-primary btn-sm" onclick="toPage({{ maxPage }})">末页</a>
     </p>
 </div>
-<div  class="table8_1">
+<div class="table8_1">
     <table>
         <tr>
             <th style="white-space: nowrap">序号</th>
@@ -217,7 +220,8 @@
     // 定义点击下载事件函数
     function download_excel() {
         // 假设后台下载Excel的路由是 /search/downloadExcel
-        var fmPms = '&goodsName='+goodsName+'&goodsKey='+goodsKey+'&wangwangId='+ wangwangId+'&orderId='+ orderId+'&shopName='+shopName +'&date='+ date+'&handlerName='+ handlerName+'&custName='+custName +'&opWechatId='+opWechatId;
-        window.open("/search/downloadExcel"+"?uuid="+userUuid+fmPms);
+        var fmPms = '&goodsName=' + goodsName + '&goodsKey=' + goodsKey + '&wangwangId=' + wangwangId + '&orderId=' + orderId + '&shopName=' + shopName + '&date=' + date + '&handlerName=' + handlerName + '&custName=' + custName + '&opWechatId=' + opWechatId;
+        window.open("/search/downloadExcel" + "?uuid=" + userUuid + fmPms);
     }
+
 </script>
