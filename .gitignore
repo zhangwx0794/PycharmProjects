@@ -13,12 +13,12 @@ TaobaoSDMS/__pycache__/*
 TaobaoSDMS/env/*
 TaobaoSDMS/venv/*
 TaobaoSDMS/static/uploads/*
-Taobao/*.zip
-Taobao/.idea/*
-Taobao/__pycache__/*
-Taobao/venv/*
-Taobao/work/*
-Taobao/*.zip
+TaobaoTools/*.zip
+TaobaoTools/.idea/*
+TaobaoTools/__pycache__/*
+TaobaoTools/venv/*
+TaobaoTools/work/*
+TaobaoTools/*.zip
 
 
 
