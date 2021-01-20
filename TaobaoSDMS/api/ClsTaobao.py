@@ -61,7 +61,6 @@ class Taobao():
     # 3. 查找当前工作目录下所有的xlsx文件
     def get_path_xlsx(self,absPath):
         allXlsx = os.listdir(absPath)
-        print(allXlsx)
         if self.getSystemPlatform() == 'Windows':
             zz = re.compile('(\.xlsx)$')
         else:
@@ -93,7 +92,10 @@ class Taobao():
     def format_xls_name(self,xlsPath):
         # 1.拼接变量
         # * xls名称
-        xlsName = str(xlsPath).split('\\')[-1]
+        if self.getSystemPlatform() == 'Windows':
+            xlsName = str(xlsPath).split('\\')[-1]
+        else:
+            xlsName = str(xlsPath).split('/')[-1]
         # * xls所在路径
         xlsPwd = str(xlsPath).split(xlsName)[0]
         # * 订单日期
@@ -193,7 +195,10 @@ class Taobao():
 
     # 10. 数据导入
     def importData(self,xlsPath):
-        xlsName = str(xlsPath).split('\\')[-1]
+        if self.getSystemPlatform() == 'Windows':
+            xlsName = str(xlsPath).split('\\')[-1]
+        else:
+            xlsName = str(xlsPath).split('/')[-1]
         wb = xlrd.open_workbook(xlsPath)
         # * 打开第一个sheet
         ws = wb.sheet_by_index(0)
@@ -237,7 +242,10 @@ class Taobao():
 
     # 13. 删除重复的xls文件
     def delRepeName(self,xlsPath,xlsxList):
-        xlsName = str(xlsPath).split('\\')[-1]
+        if self.getSystemPlatform() == 'Windows':
+            xlsName = str(xlsPath).split('\\')[-1]
+        else:
+            xlsName = str(xlsPath).split('/')[-1]
         if xlsName+'x' in xlsxList:
             os.remove(xlsPath)
             print('已删除', xlsPath)
@@ -401,7 +409,10 @@ class Taobao():
 
     # 22. 插入单条订单数据
     def insertOrder(self,orderList,xlsPath):
-        xlsName = str(xlsPath).split('\\')[-1]
+        if self.getSystemPlatform() == 'Windows':
+            xlsName = str(xlsPath).split('\\')[-1]
+        else:
+            xlsName = str(xlsPath).split('/')[-1]
         rowList = orderList
         # * 校验当前行指定范围列数据是否完整
         # 日期、经手人、店铺名称、宝贝名称、关键词、旺旺ID、订单号、客单价、佣金
