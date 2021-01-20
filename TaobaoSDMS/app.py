@@ -309,6 +309,7 @@ def repeTaskCheck():
 
 @app.route("/importData", methods=["GET", 'POST'])
 def importData():
+    importData = [('', '', '', '', '', '', '', '', '', '', '', '', '', '')]
     cnt = 0
     if request.method == 'POST':
         file = request.files.get("file")
