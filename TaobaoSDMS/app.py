@@ -237,5 +237,10 @@ def download_excel():
     return send_file(fp, attachment_filename=fileName, as_attachment=True)
 
 
+@app.route("/repeTaskCheck", methods=["GET"])
+def repeTaskCheck():
+    return 'hello world'
+
+
 if __name__ == '__main__':
     app.run()
