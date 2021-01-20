@@ -25,7 +25,15 @@
     <p></p>
     <p></p>
     <p></p>
-    <h2>检测结果</h2>
+    <div>
+        <h2> 检测结果
+            {% if checkRes[0] == 1 %}
+                <span style="color: red;text-align: center;">有重复任务！！！</span>
+            {% endif %}
+        </h2>
+
+    </div>
+
     <div class="table8_1">
         <table>
             <tr>
