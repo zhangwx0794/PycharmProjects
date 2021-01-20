@@ -79,7 +79,7 @@ class Taobao():
             wb.Close()  # FileFormat = 56 is for .xls extension
             excel.Application.Quit()
         except Exception as e:
-            print('xlsz转换xlsx异常',e)
+            print('xls转换xlsx异常',e)
         else:
             os.remove(xlsPath)
             print(xlsPath,'转换成功，源文件已删除')
@@ -108,6 +108,7 @@ class Taobao():
             if length2 > 0:
                 date = re.compile('^\d{4}-\d{2}-\d{2}').findall(xlsName)[0]
             else:
+                # 文件中不含有日期关键词就会重命名为2099-12-31+原有中文字符+xlsx
                 date = '2099-12-31'
 
         # * 店铺名称
@@ -116,17 +117,16 @@ class Taobao():
         # 2.拼接新的文件名称
         newXlsName = date + shopName + '.xlsx'
         newXlsPath = xlsPwd + newXlsName
+        # 如果新旧文件名称不一样，则重命名
+        if xlsName != newXlsName:
         # * 判断新文件是否已经存在
-        for i in range(2, 100):
-            if os.path.exists(newXlsPath):
-                print(newXlsPath, '新文件已存在，跳过重命名……','源文件名称：',xlsName)
-                newXlsPath = xlsPwd + date + shopName + '_' + str(i) + '.xlsx'
-            else:
-                os.rename(xlsPath, newXlsPath)
-                print('重命名成功!', xlsPath, ' => ', newXlsPath)
-                break
-        if '副本' in xlsName:
-            print(xlsName, newXlsPath)
+            for i in range(2, 100):
+                if os.path.exists(newXlsPath):
+                    newXlsPath = xlsPwd + date + shopName + '_' + str(i) + '.xlsx'
+                else:
+                    os.rename(xlsPath, newXlsPath)
+                    print('重命名成功!', xlsName, ' => ', newXlsName)
+                    break
         return None
 
     # 7. 删除excel含有关键字的列
@@ -186,8 +186,8 @@ class Taobao():
         # * 打开第一个sheet
         ws = wb.sheet_by_index(0)
         # * 从第二行开始导入数据
+        dataImportNum = 0
         if self.data_format_check(xlsPath) == 0 and self.chkXlsOrderUniq(xlsPath) == 0:
-            dataImportNum = 0
             for line in range(1, ws.nrows):
                 # * 获取当前行数据
                 rowList = ws.row_values(line)
@@ -218,7 +218,7 @@ class Taobao():
                     print(xlsName, '有毛病，插入数据库异常')
                     return 0
             print(xlsName, '成功导入{0}条数据'.format(dataImportNum))
-            return dataImportNum
+        return dataImportNum
     # 11. 店铺名&旺旺ID唯一检测
 
     # 12. 更新店铺名
@@ -360,7 +360,7 @@ class Taobao():
             # * 获取当前行数据
             rowList = list(ws.row_values(line))
             if rowList[5] == '':
-                print(xlsPath, '第', line + 1, '行', '第', 5, '列数据为空!')
+                print(xlsPath, '第', line + 1, '行', '第', 6, '列数据为空!')
                 return -1
             for i in range(5, 10):
                 if not str(rowList[i]).replace('.', '').isdigit():
@@ -386,8 +386,4 @@ class Taobao():
             print(xlsPath,'捕捉到打开表异常',e)
             return -1
         return 0
-    # 99. 测试方法
-    def testFunc(self):
-        print('\n'+os.getcwd())
-        pass
 

@@ -5,55 +5,77 @@
 # @File : main.py
 # @Project : Taobao
 from ClsTaobao import *
+import os
+import time
+import shutil
 
+
+def testFunc():
+    pass
 
 
 if __name__ == '__main__':
 
-    xlsList = []
-    # 定义xls存放目录
-    xlsDir = os.getcwd()+'\\'+'work'+'\\'
-    taobao = Taobao()
-
     # 调用测试方法
-    # taobao.testFunc()
-    # exit(0)newXlsPath
+    # testFunc()
+    # exit(0)
 
+    # 定义工作目录和程序主目录
+    mainDir = os.getcwd()
+    os.chdir('work')
+    workDir = os.getcwd()
+    os.chdir(mainDir)
+
+
+    # 备份工作目录
+    print('【备份工作目录】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
+    tmid = str(time.strftime('%Y_%m_%d_%H_%M_%S'))
+    workBakDir = 'work-' + tmid
+    os.mkdir(workBakDir)
+    os.chdir(workBakDir)
+    workBakAbsDir = os.getcwd()
+    os.chdir(mainDir)
+    os.removedirs(workBakAbsDir)
+    print(workDir,workBakAbsDir)
+    shutil.copytree(workDir,workBakAbsDir)
+    print('【备份工作目录】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
+
+
+    # 初始化taobao对象
+    taobao = Taobao()
+    # 定义xls文件存放目录
+    xlsDir = workDir + '\\'
+    xlsList = []
+
+    # 1. xls转xlsx
+    # 获取工作目录下所有xls文件名称
     xlsList = taobao.get_path_xls(xlsDir)
+    print('【xls转xlsx】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
+    for xls in xlsList:
+        # 拼接xls绝对路径
+        xlsAbsPath = xlsDir + xls
+        taobao.xls_to_xlsx(xlsAbsPath)
+    print('【xls转xlsx】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
+
+    # 2. 检查文件命名规范，重命名文件
+    # 获取工作目录下所有xlsx文件名称
     xlsxList = taobao.get_path_xlsx(xlsDir)
-
+    print('【检查文件命名规范&重命名】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
     for xlsx in xlsxList:
-        # taobao.chkRepeOrderInXls(xlsDir+xlsx)
-        # taobao.delBlankOrderRow(xlsDir+xlsx)
-        print('正在处理',xlsx)
-        # cnt = taobao.chkXlsOrderUniq(xlsDir+xlsx)
-        # if cnt > 0:
-        #     print(cnt)
-        if taobao.importData(xlsDir+xlsx) == 0:
-            break
-        # shopName = re.compile('[\u4e00-\u9fff]+').findall(xlsx)[0]
-        # date = re.compile('^\d{4}-\d{2}-\d{2}').findall(xlsx)[0]
-        # taobao.completeForm(xlsDir+xlsx,13,shopName)
-        # taobao.delBlankOrderRow(xlsDir+xlsx)
-        # if taobao.data_format_check(xlsDir+xlsx) >= -1:
-        #     continue
-        # else:
-        #     break
-        # 删除重复的xls文件
-        # taobao.delRepeName(xlsDir+xlsx,xlsxList)
-        # taobao.xls_to_xlsx(xlsDir+xls)
-        # taobao.format_xls_name(xlsDir+xlsx)
-        # taobao.del_col_from_key(xlsDir+xlsx,'时间',1)
-    #     v = taobao.getColValues(xlsDir+xlsx,14)
-    #     if v == 'None':
-    #         print(xlsx,v)
-    #         # taobao.insertColum(xlsDir+xlsx,13)
-    #         taobao.writeData2Xls(xlsDir+xlsx,'日期',1,14)
-    #
-    #     colValues.append(v)
-    # newCol = list(set(colValues))
-    # print(newCol)
+        xlsxAbsPath = xlsDir + xlsx
+        taobao.format_xls_name(xlsxAbsPath)
+    print('【检查文件命名规范&重命名】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
 
-    # 平台
-    # 1. 重命名为店铺名称
-    # 2. 第一列插入【序号】
+    # 3. 检查文件内容是否符合格式规范
+    # 获取工作目录下所有xlsx文件名称
+    xlsxList = taobao.get_path_xlsx(xlsDir)
+    print('【文件导入】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
+    for xlsx in xlsxList:
+        xlsxAbsPath = xlsDir + xlsx
+        print(xlsxAbsPath,'处理中……')
+        # 删除订单号为空的行
+        taobao.delBlankOrderRow(xlsxAbsPath)
+        cnt = int(taobao.importData(xlsxAbsPath))
+        if cnt > 0:
+            os.remove(xlsxAbsPath)
+    print('【文件导入】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
