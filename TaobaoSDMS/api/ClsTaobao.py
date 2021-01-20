@@ -61,6 +61,7 @@ class Taobao():
     # 3. 查找当前工作目录下所有的xlsx文件
     def get_path_xlsx(self,absPath):
         allXlsx = os.listdir(absPath)
+        print(allXlsx)
         if self.getSystemPlatform() == 'Windows':
             zz = re.compile('(\.xlsx)$')
         else:

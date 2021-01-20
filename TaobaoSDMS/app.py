@@ -332,6 +332,7 @@ def importData():
                 uploadPath = uploadDir + '/' + file.filename
             # uploadPath = os.path.join(basepath, 'static\\uploads', secure_filename(file.filename))
             file.save(uploadPath)
+
             # 初始化taobao对象
             taobao = Taobao()
             # 创建工作目录
@@ -340,25 +341,36 @@ def importData():
                 if not os.path.exists(os.getcwd() + '\\work'):
                     os.mkdir(os.getcwd() + '\\work')
             else:
-                if not os.path.exists(os.getcwd() + '/work'):
-                    os.mkdir(os.getcwd() + '/work')
+                if not os.path.exists('/boss/soft/taobao/work'):
+                    os.mkdir('/boss/soft/taobao/work')
 
             # 定义工作目录和程序主目录
-            mainDir = os.getcwd()
-            os.chdir('work')
-            workDir = os.getcwd()
-            os.chdir(mainDir)
+            if taobao.getSystemPlatform() == 'Windows':
+                mainDir = os.getcwd()
+                os.chdir('work')
+                workDir = os.getcwd()
+                os.chdir(mainDir)
+            else:
+                mainDir = '/boss/soft/taobao'
+                workDir = '/boss/soft/taobao/work'
 
             # 备份工作目录
             print('【备份工作目录】工作开始', time.strftime('%Y-%m-%d %H:%M:%S'))
-            tmid = str(time.strftime('%Y_%m_%d_%H_%M_%S'))
-            workBakDir = 'work-' + tmid
-            os.mkdir(workBakDir)
-            os.chdir(workBakDir)
-            workBakAbsDir = os.getcwd()
-            os.chdir(mainDir)
-            os.removedirs(workBakAbsDir)
-            print(workDir, workBakAbsDir)
+            if taobao.getSystemPlatform() == 'Windows':
+                tmid = str(time.strftime('%Y_%m_%d_%H_%M_%S'))
+                workBakDir = 'work-' + tmid
+                os.mkdir(workBakDir)
+                os.chdir(workBakDir)
+                workBakAbsDir = os.getcwd()
+                os.chdir(mainDir)
+                os.removedirs(workBakAbsDir)
+                print(workDir, workBakAbsDir)
+            else:
+                tmid = str(time.strftime('%Y_%m_%d_%H_%M_%S'))
+                workBakDir = 'work-' + tmid
+                workBakAbsDir = '/boss/soft/taobao/' + workBakDir
+                os.removedirs(workBakAbsDir)
+                print(workDir, workBakAbsDir)
             shutil.copytree(workDir, workBakAbsDir)
             print('【备份工作目录】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
 
