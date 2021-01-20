@@ -64,7 +64,7 @@ class Taobao():
         if self.getSystemPlatform() == 'Windows':
             zz = re.compile('(\.xlsx)$')
         else:
-            zz = re.compile('(/.xlsx)$')
+            zz = re.compile('(\.xlsx)$')
         xlsxList = []
         for xlsx in allXlsx:
             zzRes = zz.findall(xlsx)
