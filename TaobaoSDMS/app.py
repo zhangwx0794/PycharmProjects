@@ -264,13 +264,13 @@ def repeTaskCheck():
             basepath = os.getcwd()  # 当前文件所在路径
             if getSystemPlatform() == 'Windows':
                 uploadDir = basepath + '\\static\\uploads'
-            else == 'Linux':
+            else:
                 uploadDir = basepath + '/static/uploads'
             if not os.path.exists(uploadDir):
                 os.mkdir(uploadDir)
             if getSystemPlatform() == 'Windows':
                 uploadPath = uploadDir + '\\' + file.filename
-            else getSystemPlatform() == 'Linux':
+            else:
                 uploadPath = uploadDir + '/' + file.filename
             # uploadPath = os.path.join(basepath, 'static\\uploads', secure_filename(file.filename))
             file.save(uploadPath)
