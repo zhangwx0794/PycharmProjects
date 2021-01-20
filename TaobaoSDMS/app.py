@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
+from werkzeug.utils import secure_filename
 from api.mysql_func import *
 import xlsxwriter
 import uuid
 import io
-import time
+import os
+import time,datetime
+from dateutil.relativedelta import relativedelta
+import xlwt, xlrd
 
 app = Flask(__name__)
 
@@ -161,7 +165,7 @@ def search():
 @app.route("/search/downloadExcel", methods=["GET"])
 def download_excel():
     # 获取url参数信息
-    print('/search/downloadExcel',request.args)
+    print('/search/downloadExcel', request.args)
     userUuid = request.args.get('uuid')
     goodsName = request.args.get('goodsName')
     goodsKey = request.args.get('goodsKey')
@@ -193,7 +197,8 @@ def download_excel():
         searchSql = searchSql + ' and opWechatId like ' + '\'%' + opWechatId + '%\''
 
     # 拼接form参数sql
-    whereSql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0}'.format(searchSql)
+    whereSql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0}'.format(
+        searchSql)
     # 获取查询结果
     searchData = mysql_conn(whereSql)
 
@@ -201,15 +206,17 @@ def download_excel():
     header_list = []
     role = int(mysql_conn('select role from userInfo where uuid = {0}'.format('\'' + userUuid + '\''))[0][0])
     if role == 9:
-        header_list = ["序号", "店铺名称", "宝贝标题", "关键词", "旺旺", "订单号", "实付金额", "佣金", "红包及其他", "刷手佣金", "经手人", "操作微信号", "客户名称","日期" ]
+        header_list = ["序号", "店铺名称", "宝贝标题", "关键词", "旺旺", "订单号", "实付金额", "佣金", "红包及其他", "刷手佣金", "经手人", "操作微信号", "客户名称",
+                       "日期"]
     else:
-        header_list = ["序号", "店铺名称", "宝贝标题", "关键词", "旺旺", "订单号", "实付金额", "佣金", "客户名称", "日期",]
+        header_list = ["序号", "店铺名称", "宝贝标题", "关键词", "旺旺", "订单号", "实付金额", "佣金", "客户名称", "日期", ]
     """1. 生成表头   2. 生成数据  3. 个性化合并单元格，修改字体属性、修改列宽  3. 返回给前端"""
     fp = io.BytesIO()  # 生成一个BytesIO对象
     book = xlsxwriter.Workbook(fp)  # 可以认为创建了一个Excel文件
     worksheet = book.add_worksheet('sheet1')  # 增加一个sheet
     # 1. 生成表头
-    header_list = ["序号", "店铺名称", "宝贝标题", "关键词", "旺旺", "订单号", "实付金额", "佣金", "红包及其他", "刷手佣金", "经手人", "操作微信号", "客户名称","日期"]
+    header_list = ["序号", "店铺名称", "宝贝标题", "关键词", "旺旺", "订单号", "实付金额", "佣金", "红包及其他", "刷手佣金", "经手人", "操作微信号", "客户名称",
+                   "日期"]
     for col, header in enumerate(header_list):
         worksheet.write(0, col, header)  # 行(从0开始), 列(从0开始)， 内容
 
@@ -233,13 +240,57 @@ def download_excel():
     # worksheet.merge(len(students_data + 1, students_data + 2, 1, 5, "合并单元格内容", my_format))
     book.close()
     fp.seek(0)
-    fileName = time.strftime('%Y-%m-%d_%H_%M_%S',time.localtime(time.time()))+'_'+''.join(str(uuid.uuid4()).split('-'))+'.xlsx'
+    fileName = time.strftime('%Y-%m-%d_%H_%M_%S', time.localtime(time.time())) + '_' + ''.join(
+        str(uuid.uuid4()).split('-')) + '.xlsx'
     return send_file(fp, attachment_filename=fileName, as_attachment=True)
 
 
-@app.route("/repeTaskCheck", methods=["GET"])
+@app.route("/repeTaskCheck", methods=["GET", 'POST'])
 def repeTaskCheck():
-    return 'hello world'
+    if request.method == 'POST':
+        file = request.files.get("file")
+        if file.filename is '':
+            # 表示没有发送文件
+            checkRes = [-1, '错误，未上传文件']
+        elif str(file.filename).split('.')[-1] not in ('xls', 'xlsx'):
+            checkRes = [-1, '错误，文件类型不是xls或者xlsx']
+        else:
+            os.getcwd()
+            basepath = os.getcwd()  # 当前文件所在路径
+            uploadDir = basepath + '\\static\\uploads'
+            if not os.path.exists(uploadDir):
+                os.mkdir(uploadDir)
+            uploadPath = uploadDir + '\\' + file.filename
+            # uploadPath = os.path.join(basepath, 'static\\uploads', secure_filename(file.filename))
+            file.save(uploadPath)
+
+            wb = xlrd.open_workbook(uploadPath)
+            # * 打开第一个sheet
+            ws = wb.sheet_by_index(0)
+            repeTaskList=[]
+            for line in range(1, ws.nrows):
+                wangWangId = str(ws.cell_value(rowx=line, colx=0)).strip()
+                shopName = str(ws.cell_value(rowx=line, colx=1)).strip()
+                dateTurple = xlrd.xldate_as_tuple(ws.cell_value(rowx=line, colx=2), 0)
+                year, month, day = dateTurple[:3]
+                lastMonthDate = str(datetime.date(year, month, day) - relativedelta(months=+1))
+                taskDate = str(dateTurple[0]) + '-' + str(dateTurple[1]).rjust(2, '0') + '-' + str(dateTurple[2]).rjust(
+                    2, '0')
+                sqlFormat = 'wangwangId=' + '\'' + wangWangId + '\'' + 'and shopName=' + '\'' + shopName + '\'' + 'and date >' + '\'' + lastMonthDate + '\''
+                sql = 'select wangwangId,shopName,orderId,date from orderInfo where isDel = 0 and {0}'.format(sqlFormat)
+                sqlRes = mysql_conn(sql)
+                print(wangWangId, shopName, taskDate,lastMonthDate)
+                if len(sqlRes) > 0:
+                    tp = (wangWangId,shopName,taskDate,sqlRes[0][2],sqlRes[0][3])
+                    repeTaskList.append(tp)
+                    checkRes = [1,repeTaskList]
+                else:
+                    checkRes = [-1, '恭喜你，本excel中所有旺旺ID 1个月内无重复任务！']
+
+
+    elif request.method == 'GET':
+        checkRes = [-1, '']
+    return render_template('repeTaskCheck.html', checkRes=checkRes)
 
 
 if __name__ == '__main__':

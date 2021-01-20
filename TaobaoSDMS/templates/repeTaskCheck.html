@@ -2,9 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>repeTaskCheck</title>
+    <link href="../static/bootstrap-3.3.7-dist/css/table.css" rel="stylesheet"/>
+    {#    <link href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"/>#}
+    <script src="../static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <style>
+        #css
+        .box {
+        {#left: 0;#}{#right: 0;#}{#top: 0;#}{#bottom: 0;#} margin: 20%;
+        }
+    </style>
 </head>
-<body>
+<body style="margin: 20%;">
+<div>
+    <h2>重复任务检测</h2>
+    <div>
+        <form action="" enctype='multipart/form-data' method='POST'>
+            <input type="file" name="file">
+            <input type="submit" value="检测">
+        </form>
+    </div>
+    <p></p>
+    <p></p>
+    <p></p>
+    <h2>检测结果</h2>
+    <div class="table8_1">
+        <table>
+            <tr>
+                <th>旺旺ID</th>
+                <th>店铺名称</th>
+                <th>当前任务日期</th>
+                <th>历史订单号</th>
+                <th>历史订单日期</th>
+            </tr>
+            {% if checkRes[0] == -1 %}
+                <tr>
+                    <td colspan="5" style="color: red;">{{ checkRes[1] }}</td>
+                </tr>
+            {% else %}
+                {% for row in checkRes[1] %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4] }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
 
+        </table>
+    </div>
+</div>
 </body>
 </html>
