@@ -10,6 +10,7 @@ import time
 import shutil
 
 
+
 def testFunc():
     pass
 
@@ -17,8 +18,8 @@ def testFunc():
 if __name__ == '__main__':
 
     # 调用测试方法
-    # testFunc()
-    # exit(0)
+    testFunc()
+    exit(0)
 
     # 定义工作目录和程序主目录
     mainDir = os.getcwd()

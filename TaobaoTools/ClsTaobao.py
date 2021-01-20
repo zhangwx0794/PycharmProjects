@@ -10,6 +10,7 @@ import pymysql
 import os
 import re
 import time
+import platform
 from openpyxl import *
 import win32com.client as win32
 
@@ -425,3 +426,8 @@ class Taobao():
             print('订单号[{0}]插入数据库异常'.format(orderId))
             return 0
 
+    # 23. 获取系统类型
+    def getSystemPlatform(self):
+        plat_tuple = platform.architecture()
+        system = platform.system()
+        return system

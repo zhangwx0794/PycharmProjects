@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 from werkzeug.utils import secure_filename
 from api.mysql_func import *
+from api.zhangwx import *
 import xlsxwriter
 import uuid
 import io
@@ -261,10 +262,16 @@ def repeTaskCheck():
         else:
             os.getcwd()
             basepath = os.getcwd()  # 当前文件所在路径
-            uploadDir = basepath + '\\static\\uploads'
+            if getSystemPlatform() == 'Windows':
+                uploadDir = basepath + '\\static\\uploads'
+            else == 'Linux':
+                uploadDir = basepath + '/static/uploads'
             if not os.path.exists(uploadDir):
                 os.mkdir(uploadDir)
-            uploadPath = uploadDir + '\\' + file.filename
+            if getSystemPlatform() == 'Windows':
+                uploadPath = uploadDir + '\\' + file.filename
+            else getSystemPlatform() == 'Linux':
+                uploadPath = uploadDir + '/' + file.filename
             # uploadPath = os.path.join(basepath, 'static\\uploads', secure_filename(file.filename))
             file.save(uploadPath)
 
