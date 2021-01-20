@@ -49,8 +49,12 @@ if __name__ == '__main__':
 
 
     # 定义xls文件存放目录
-    xlsDir = workDir + '\\'
     xlsList = []
+    if taobao.getSystemPlatform() == 'Windows':
+        xlsDir = workDir + '\\'
+    else:
+        xlsDir = workDir + '/'
+
 
     # if taobao.getSystemPlatform() == 'Windows':
     #     # 1. xls转xlsx
