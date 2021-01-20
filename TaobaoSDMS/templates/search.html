@@ -17,6 +17,7 @@
         关键词 : &nbsp;<input type="text" name='goodsKey' id='goodsKey' width="10%" placeholder="请输入关键词"/>
         旺旺ID : &nbsp; <input type="text" name='wangwangId' id='wangwangId' width="10%" placeholder="请输入旺旺ID"/>
         订单号 : &nbsp; <input type="text" name='orderId' id='orderId' width="10%" placeholder="请输入订单号"/>
+        操作人微信 : &nbsp; <input type="text" name='opWechatId' id='opWechatId' width="10%" placeholder="请输入操作人微信"/>
         <p></p>
         店铺名称: &nbsp; <input type="text" name='shopName' id='shopName' width="10%" placeholder="请输入店铺名称"/>
         订单日期: &nbsp; <input type="text" name='date' id='date' width="10%" placeholder="请输入日期，例如: 2020-01-01"/>
@@ -121,6 +122,7 @@
     var date = '{{ formParameters[5] }}';
     var handlerName = '{{ formParameters[6] }}';
     var custName = '{{ formParameters[7] }}';
+    var opWechatId = '{{ formParameters[8] }}';
 
     function initVars() {
         {#如果pageSize为空，则继续从url变量中获取page值，否则赋值为10#}
@@ -215,7 +217,7 @@
     // 定义点击下载事件函数
     function download_excel() {
         // 假设后台下载Excel的路由是 /search/downloadExcel
-        var fmPms = '&goodsName='+goodsName+'&goodsKey='+goodsKey+'&wangwangId='+ wangwangId+'&orderId='+ orderId+'&shopName='+shopName +'&date='+ date+'&handlerName='+ handlerName+'&custName='+custName;
+        var fmPms = '&goodsName='+goodsName+'&goodsKey='+goodsKey+'&wangwangId='+ wangwangId+'&orderId='+ orderId+'&shopName='+shopName +'&date='+ date+'&handlerName='+ handlerName+'&custName='+custName +'&opWechatId='+opWechatId;
         window.open("/search/downloadExcel"+"?uuid="+userUuid+fmPms);
     }
 </script>

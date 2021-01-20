@@ -85,6 +85,7 @@ def search():
             date = form['date']
             handlerName = form['handlerName']
             custName = form['custName']
+            opWechatId = form['opWechatId']
             # 将前端查询参数写到数组里
             formParameters.append(goodsName)
             formParameters.append(goodsKey)
@@ -94,6 +95,7 @@ def search():
             formParameters.append(date)
             formParameters.append(handlerName)
             formParameters.append(custName)
+            formParameters.append(opWechatId)
             searchSql = ''
             if goodsName != '':
                 searchSql = searchSql + ' and goodsName like ' + '\'%' + goodsName + '%\''
@@ -111,6 +113,8 @@ def search():
                 searchSql = searchSql + ' and handlerName like ' + '\'%' + handlerName + '%\''
             if custName != '':
                 searchSql = searchSql + ' and custName like ' + '\'%' + custName + '%\''
+            if opWechatId != '':
+                searchSql = searchSql + ' and opWechatId like ' + '\'%' + opWechatId + '%\''
             # 本次查询结果总记录数
             queryTotalCntSql = 'select count(0) from orderInfo where isDel = 0 {0}'.format(searchSql)
             queryTotalCnt = int(mysql_conn(queryTotalCntSql)[0][0])
@@ -167,6 +171,7 @@ def download_excel():
     date = request.args.get('date')
     handlerName = request.args.get('handlerName')
     custName = request.args.get('custName')
+    opWechatId = request.args.get('opWechatId')
     searchSql = ''
     if goodsName != '':
         searchSql = searchSql + ' and goodsName like ' + '\'%' + goodsName + '%\''
@@ -184,6 +189,8 @@ def download_excel():
         searchSql = searchSql + ' and handlerName like ' + '\'%' + handlerName + '%\''
     if custName != '':
         searchSql = searchSql + ' and custName like ' + '\'%' + custName + '%\''
+    if opWechatId != '':
+        searchSql = searchSql + ' and opWechatId like ' + '\'%' + opWechatId + '%\''
 
     # 拼接form参数sql
     whereSql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0}'.format(searchSql)
