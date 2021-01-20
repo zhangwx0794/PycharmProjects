@@ -363,9 +363,11 @@ def importData():
             print('【备份工作目录】工作结束', time.strftime('%Y-%m-%d %H:%M:%S'))
 
             # 定义xls文件存放目录
-            xlsDir = workDir + '\\'
             xlsList = []
-
+            if taobao.getSystemPlatform() == 'Windows':
+                xlsDir = workDir + '\\'
+            else:
+                xlsDir = workDir + '/'
             # # 1. xls转xlsx
             # # 获取工作目录下所有xls文件名称
             # xlsList = taobao.get_path_xls(xlsDir)
