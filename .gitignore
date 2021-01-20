@@ -7,9 +7,15 @@ ShowHtmlTable/api/__pycache__/*
 ShowHtmlTable/__pycache__/*
 ShowHtmlTable/env/*
 ShowHtmlTable/venv/*
+ShowHtmlTable/.idea/*
+ShowHtmlTable/api/__pycache__/*
+ShowHtmlTable/__pycache__/*
+ShowHtmlTable/env/*
+ShowHtmlTable/venv/*
 Taobao/*.zip
 Taobao/.idea/*
 Taobao/__pycache__/*
 Taobao/venv/*
 Taobao/work/*
 Taobao/*.zip
+
