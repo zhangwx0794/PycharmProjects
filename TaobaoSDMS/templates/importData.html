@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>importData</title>
+    <link href="../static/bootstrap-3.3.7-dist/css/table.css" rel="stylesheet"/>
+    {#    <link href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"/>#}
+    <script src="../static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <style>
+        #css
+        .box {
+        {#left: 0;#}{#right: 0;#}{#top: 0;#}{#bottom: 0;#} margin: 20%;
+        }
+    </style>
+</head>
+<body style="margin: 20%;">
+<div>
+    <h2>数据导入</h2>
+    <div>
+        <form action="" enctype='multipart/form-data' method='POST'>
+            <input type="file" name="file">
+            <input type="submit" value="导入">
+        </form>
+    </div>
+    <p></p>
+    <p></p>
+    <p></p>
+    <div>
+        <h2> 导入结果
+            {% if cnt > 0 %}
+                <span style="color: red;text-align: center;">成功导入{{ cnt }}条数据</span>
+            {% elif cnt == -1 %}
+                <span style="color: red;text-align: center;">导入失败，请检查数据格式是否规范！</span>
+            {% endif %}</h2>
+    </div>
+
+    <div class="table8_1">
+        <table>
+            <tr>
+                <th style="white-space: nowrap">序号</th>
+                <th style="white-space: nowrap">客户名</th>
+                <th style="white-space: nowrap">店铺名</th>
+                <th style="white-space: nowrap">宝贝标题</th>
+                <th style="white-space: nowrap">关键词</th>
+                <th style="white-space: nowrap">旺旺号</th>
+                <th style="white-space: nowrap">订单号</th>
+                <th style="white-space: nowrap">实付金额</th>
+                <th style="white-space: nowrap">佣金</th>
+                <th style="white-space: nowrap">红包及其他</th>
+                <th style="white-space: nowrap">刷手佣金</th>
+                <th style="white-space: nowrap">经手人</th>
+                <th style="white-space: nowrap">操作微信号</th>
+                <th style="white-space: nowrap">日期</th>
+            </tr>
+            {% for row in sqlRes %}
+                <tr>
+                    <td style="white-space: nowrap">{{ row[0] }}</td>
+                    <td style="white-space: nowrap">{{ row[12] }}</td>
+                    <td style="white-space: nowrap">{{ row[1] }}</td>
+                    <td style="white-space: nowrap">{{ row[2] }}</td>
+                    <td style="white-space: nowrap">{{ row[3] }}</td>
+                    <td style="white-space: nowrap">{{ row[4] }}</td>
+                    <td style="white-space: nowrap">{{ row[5] }}</td>
+                    <td style="white-space: nowrap">{{ row[6] }}</td>
+                    <td style="white-space: nowrap">{{ row[7] }}</td>
+                    <td style="white-space: nowrap">{{ row[8] }}</td>
+                    <td style="white-space: nowrap">{{ row[9] }}</td>
+                    <td style="white-space: nowrap">{{ row[10] }}</td>
+                    <td style="white-space: nowrap">{{ row[11] }}</td>
+                    <td style="white-space: nowrap">{{ row[13] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+</body>
+</html>
