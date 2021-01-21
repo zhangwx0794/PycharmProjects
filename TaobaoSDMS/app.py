@@ -56,8 +56,6 @@ def search():
     userUuid = ''
     role = 0
     if sessionCheck():
-        print('entrance /search')
-        print(dict(session).keys())
         username = list(dict(session).keys())[0]
         userUuid = getUserUuid(username)
         role = getUserRole(username)
@@ -366,6 +364,7 @@ def importData():
                 os.chdir(workBakDir)
                 workBakAbsDir = os.getcwd()
                 os.chdir(mainDir)
+                os.removedirs(workBakAbsDir)
                 print(workDir, workBakAbsDir)
             else:
                 workBakAbsDir = '/boss/soft/taobao/' + workBakDir
@@ -424,8 +423,11 @@ def importData():
                 xlsxAbsPath = xlsDir + xlsx
                 print(xlsxAbsPath, '处理中……')
                 # 删除订单号为空的行
+                print('开始删除订单号为空的行')
                 taobao.delBlankOrderRow(xlsxAbsPath)
+                print('结束删除订单号为空的行')
                 cnt = int(taobao.importData(xlsxAbsPath))
+                print(xlsx,'成功导入{0}条数据'.format(cnt))
                 if cnt > 0:
                     os.remove(xlsxAbsPath)
                     print('订单导入完毕，删除', xlsxAbsPath)

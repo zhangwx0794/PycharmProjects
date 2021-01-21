@@ -183,7 +183,7 @@ class Taobao():
             # 获取订单号
             colValue = str(ws.cell_value(rowx=line,colx=5)).strip()
             if colValue in orderIdLst:
-                # print(xlsPath,'订单号与数据库重复',colValue,'第',line,'行')
+                print(xlsPath,'数据库存在相同订单号',colValue,'第',line+1,'行')
                 cnt += 1
             else:
                 if cnt > 0:
