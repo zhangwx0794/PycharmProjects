@@ -136,14 +136,14 @@ def search():
         # 计算最大页数
         maxPage = count_max_page(tableName='orderInfo', pageSize=pageSize)
         paginateDict = paginate(page=page, size=pageSize)
-        sql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0} order by date limit {1},{2}'.format(
+        sql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0} order by date desc limit {1},{2}'.format(
             searchSql, paginateDict['offset'], paginateDict['limit'])
         sqlRes = mysql_conn(sql)
         lastPage = paginateDict['before']
         nextPage = paginateDict['next']
 
         # 计算分页订单总价格
-        priceSql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0} order by date'.format(
+        priceSql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,redPackets,ssyj,handlerName,opWechatId,custName,date from orderInfo where isDel = 0 {0} order by date desc'.format(
             searchSql)
         priceSqlRes = mysql_conn(priceSql)
         totalKdjPrice = 0
