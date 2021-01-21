@@ -80,3 +80,21 @@ def paginate(page, size=20):
         "next": page + 2
     }
     return data
+
+# 用户登录校验
+def userLoginCheck(username,password):
+    sql = 'select count(0) from userInfo where isDel = 0 and username = \'{0}\' and password = \'{1}\''.format(username,password)
+    res = mysql_conn(sql=sql)
+    return res[0][0]
+
+# 获取用户UUID
+def getUserUuid(username):
+    sql = 'select uuid from userInfo where isDel = 0 and username = \'{0}\''.format(username)
+    res = mysql_conn(sql=sql)
+    return res[0][0]
+
+# 获取用户角色
+def getUserRole(username):
+    sql = 'select role from userInfo where isDel = 0 and username = \'{0}\''.format(username)
+    res = mysql_conn(sql=sql)
+    return res[0][0]

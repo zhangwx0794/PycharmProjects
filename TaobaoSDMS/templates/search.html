@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>闻迪Plus</title>
-    <link href="../static/bootstrap-3.3.7-dist/css/table.css" rel="stylesheet"/>
-    <link href="../static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <script src="../static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <link href="../static/bootstrap/css/table.css" rel="stylesheet"/>
+    <link href="../static/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/login/js/jquery-1.12.4.min.js"></script>
 </head>
 {#<body style="width: 80%;margin: 2% auto;">#}
 <body>
+<div style="text-align: right;">
+    {% if username != '' %}
+        <ul>
+            <li><span>{{ username }}，你好</span></li>
+            <li><a href="#" id="exitBtn">退出</a></li>
+        </ul>
+    {% endif %}
+</div>
 <div style="margin: 20px 20px;">
     <form action="/search" method="post" id="form">
         <!-- 搜索框 -->
@@ -223,5 +232,25 @@
         var fmPms = '&goodsName=' + goodsName + '&goodsKey=' + goodsKey + '&wangwangId=' + wangwangId + '&orderId=' + orderId + '&shopName=' + shopName + '&date=' + date + '&handlerName=' + handlerName + '&custName=' + custName + '&opWechatId=' + opWechatId;
         window.open("/search/downloadExcel" + "?uuid=" + userUuid + fmPms);
     }
+    $(document).ready(function () {
+        $("#exitBtn").click(function () {
+            $.ajax({
+                    url: "http://127.0.0.1:8088/logout",
+                    type: "POST",
+                    dataType: "text",
+                    success: function (data) {
+                        if (data == 'success') {
+                            window.location.href = '/login';
+                        } else {
+                            alert('系统错误')
+                        }
+                    },
+                    error:
+                        function (msg) {
+                            alert(msg)
+                        }
+                })
+        })
+    })
 
 </script>

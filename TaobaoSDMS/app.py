@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, redirect, url_for, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, send_file,jsonify
 from werkzeug.utils import secure_filename
 from api.mysql_func import *
 from api.zhangwx import *
 import api.importData
 import xlsxwriter
 import uuid
+import json
 import io
 import os
 import time, datetime
@@ -15,18 +16,34 @@ from api.ClsTaobao import *
 import os
 import time
 import shutil
+from datetime import timedelta
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.urandom(24)
+# 设置session 5小时过期
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=5)
+
+
+def sessionCheck():
+    return True if len(session) > 0 else False
 
 
 @app.route('/')
 def home():
-    # 页面重定向
-    userUuid = request.args.get('uuid')
-    if check_user(userUuid):
+    if sessionCheck():
+        print(sessionCheck)
+        username = dict(session).keys()[0]
+        userUuid = getUserUuid(username)
         return redirect(url_for('search', uuid=userUuid))
     else:
-        return redirect(url_for('error404'))
+        return redirect('/login')
+
+    # 页面重定向
+    # userUuid = request.args.get('uuid')
+    # if check_user(userUuid):
+    #     return redirect(url_for('search', uuid=userUuid))
+    # else:
+    #     return redirect(url_for('error404'))
 
 
 @app.route('/404')
@@ -34,38 +51,22 @@ def error404():
     return render_template('404.htm')
 
 
-@app.route('/index')
-def index():
-    # 每页显示数量 page_show_count
-    page_show_count = int(request.args.get('page_show_count')) if request.args.get('page_show_count') != None else 15
-    page = int(request.args.get('page')) if request.args.get('page') != None else 1
-    # 计算最大页数
-    sql_row_count = 'select count(0) from orderInfo where isDel = 0'
-    maxPage = (mysql_conn(sql_row_count)[0][0] % page_show_count) / page_show_count if mysql_conn(sql_row_count)[0][
-                                                                                           0] % page_show_count == 0 else int(
-        mysql_conn(sql_row_count)[0][0] / page_show_count) + 1
-    sql = 'select id,shopName,goodsName,goodsKey,wangwangId,orderId,goodsPrice,goodsYj,handlerName,date from orderInfo where isDel = 0 order by date limit %s,%s' % (
-        str((page - 1) * page_show_count), page_show_count)
-    print('打印sql语句: ', sql)
-    sqlRes = mysql_conn(sql)
-    lastPage = page - 1 if page > 1 else 1
-    nextPage = page + 1 if page < maxPage else maxPage
-    print(page, lastPage, nextPage, maxPage)
-    return render_template('index.html', sqlRes=sqlRes, lastPage=lastPage, nextPage=nextPage, maxPage=maxPage)
-
-
 @app.route('/search', methods=["GET", "POST"])
 def search():
-    # 页面重定向，如果UUID是管理员则显示更多属性，如果没有UUID则跳转404，否则显示普通属性
-    # 获取UUID
     userUuid = ''
     role = 0
-    formParameters = []
-    if request.method == 'GET':
-        userUuid = request.args.get('uuid')
-    elif request.method == 'POST':
-        userUuid = request.form['userUuid']
+    if sessionCheck():
+        print('entrance /search')
+        print(dict(session).keys())
+        username = list(dict(session).keys())[0]
+        userUuid = getUserUuid(username)
+        role = getUserRole(username)
+    else:
+        return redirect('/login')
 
+    # 页面重定向，如果UUID是管理员则显示更多属性，如果没有UUID则跳转404，否则显示普通属性
+    # 获取UUID
+    formParameters = []
     if not check_user(userUuid):
         return redirect(url_for('error404'))
     else:
@@ -168,7 +169,8 @@ def search():
             totalRedPackets=totalRedPackets,
             totalSsyj=totalSsyj,
             role=role,
-            formParameters=formParameters
+            formParameters=formParameters,
+            username=username
         )
 
 
@@ -435,8 +437,61 @@ def importData():
     elif request.method == 'GET':
         importData = [('', '', '', '', '', '', '', '', '', '', '', '', '', '')]
         cnt = 0
-    return render_template('importData.html', importData=importData,cnt=cnt)
+    return render_template('importData.html', importData=importData, cnt=cnt)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    username = ''
+    password = ''
+    if request.method == 'GET':
+        return render_template('login.html')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = getMd5(request.form.get('password'))
+        print(password)
+        if userLoginCheck(username, password) == 1:
+            # 将用户信息存入session
+            session[username] = username
+            userUuid = getUserUuid(username)
+            # return redirect(url_for('search', uuid=userUuid))
+            print('success')
+            return 'success'
+        else:
+            # return render_template('login.html', checkout=0)
+            print('fail')
+            return 'fail'
+
+
+@app.route('/index', methods=['GET', 'POST'])
+def index():
+    return render_template('index.html')
+
+
+@app.route('/ajaxDemo', methods=['GET', 'POST'])
+def ajaxDemo():
+    if request.method == 'POST':
+        print('ajax Post')
+        username = request.form.get('username')
+        nickname = request.form.get('nickname')
+        print(username,nickname)
+        return jsonify({'name':'zhangwx','age':20})
+    else:
+        print('ajax Get')
+        username = request.args.get('username')
+        nickname = request.args.get('nickname')
+        print(username, nickname)
+        return jsonify({'name':'zhangwx','age':20})
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    if request.method == 'POST':
+        if sessionCheck():
+            username = list(dict(session).keys())[0]
+            session.pop(username)
+            return 'success'
+    else:
+        return render_template('login.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
