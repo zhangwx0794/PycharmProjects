@@ -235,7 +235,7 @@
     $(document).ready(function () {
         $("#exitBtn").click(function () {
             $.ajax({
-                    url: "http://127.0.0.1:8088/logout",
+                    url: "/logout",
                     type: "POST",
                     dataType: "text",
                     success: function (data) {
