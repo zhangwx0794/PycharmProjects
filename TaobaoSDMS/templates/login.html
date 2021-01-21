@@ -71,7 +71,7 @@
                 alert('用户名或密码不能为空')
             } else {
                 $.ajax({
-                    url: "http://127.0.0.1:8088/login",
+                    url: "/login",
                     type: "POST",
                     data: {"username": $("#username").val(), "password": $("#password").val()},
                     dataType: "text",
