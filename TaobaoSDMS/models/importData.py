@@ -4,7 +4,7 @@
 # @Email : zhangwx0794@gmail.com
 # @File : main.py
 # @Project : Taobao
-from api.ClsTaobao import *
+from models.ClsTaobao import *
 import os
 import time
 import shutil

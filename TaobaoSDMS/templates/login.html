@@ -10,8 +10,6 @@
 <link rel="stylesheet" type="text/css" href="../static/login/css/bootstrap.min.css"/>
 <body>
 
-{#<a style="display:block;width:200px;height:42px;line-height:42px;font-size:18px;text-align:center;margin:40px auto;font-weight:800;" href="#" class="tbox">点击弹出</a>#}
-
 <div class="modal fade" id="myModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -86,9 +84,9 @@
                     type: "POST",
                     data: {"username": $("#username").val(), "password": $("#password").val()},
                     dataType: "text",
-                    success: function (data) {
-                        if (data == 'success') {
-                            window.location.href = '/search';
+                    success: function (url) {
+                        if (url != 'fail') {
+                            window.location.href = url;
                         } else {
                             $("#loginTip").html('提示：用户名或密码错误');
                         }

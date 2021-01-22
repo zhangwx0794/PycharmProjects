@@ -13,8 +13,8 @@
 <div style="text-align: right;">
     {% if username != '' %}
 
-            <span>{{ username }}，你好</span>
-            <a href="#" id="exitBtn">退出</a>
+        <span>{{ username }}，你好</span>
+        <a href="#" id="exitBtn">退出</a>
 
     {% endif %}
 </div>
@@ -32,6 +32,7 @@
         订单日期: &nbsp; <input type="text" name='date' id='date' width="10%" placeholder="请输入日期，例如: 2020-01-01"/>
         经手人 : &nbsp; <input type="text" name='handlerName' id='handlerName' width="10%" placeholder="请输入经手人"/>
         客户名 : &nbsp; <input type="text" name='custName' id='custName' width="10%" placeholder="请输入客户名称"/>
+        备注 : &nbsp; <input type="text" name='note' id='note' width="10%" placeholder="请输入备注"/>
         <input type="hidden" id="inputPageSize" name="pageSize"/>
         <input type="hidden" id="inputUserUuid" name="userUuid"/>
         <input type="hidden" id="inputRole" name="role"/>
@@ -96,6 +97,7 @@
                 <th style="white-space: nowrap">操作微信号</th>
             {% endif %}
             <th style="white-space: nowrap">日期</th>
+            <th style="white-space: nowrap">备注</th>
         </tr>
         {% for row in sqlRes %}
             <tr>
@@ -115,6 +117,7 @@
                     <td style="white-space: nowrap">{{ row[11] }}</td>
                 {% endif %}
                 <td style="white-space: nowrap">{{ row[13] }}</td>
+                <td style="white-space: nowrap">{{ row[14] }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -135,6 +138,7 @@
     var handlerName = '{{ formParameters[6] }}';
     var custName = '{{ formParameters[7] }}';
     var opWechatId = '{{ formParameters[8] }}';
+    var note = '{{ formParameters[9] }}';
 
     function initVars() {
         {#如果pageSize为空，则继续从url变量中获取page值，否则赋值为10#}
@@ -229,27 +233,29 @@
     // 定义点击下载事件函数
     function download_excel() {
         // 假设后台下载Excel的路由是 /search/downloadExcel
-        var fmPms = '&goodsName=' + goodsName + '&goodsKey=' + goodsKey + '&wangwangId=' + wangwangId + '&orderId=' + orderId + '&shopName=' + shopName + '&date=' + date + '&handlerName=' + handlerName + '&custName=' + custName + '&opWechatId=' + opWechatId;
-        window.open("/search/downloadExcel" + "?uuid=" + userUuid + fmPms);
+        var fmPms = '&goodsName=' + goodsName + '&goodsKey=' + goodsKey + '&wangwangId=' + wangwangId + '&orderId=' + orderId + '&shopName=' + shopName + '&date=' + date + '&handlerName=' + handlerName + '&custName=' + custName + '&opWechatId=' + opWechatId + '&note=' + note;
+        window.open("/downloadExcel" + "?uuid=" + userUuid + fmPms);
     }
+
     $(document).ready(function () {
         $("#exitBtn").click(function () {
             $.ajax({
-                    url: "/logout",
-                    type: "POST",
-                    dataType: "text",
-                    success: function (data) {
-                        if (data == 'success') {
-                            window.location.href = '/login';
-                        } else {
-                            alert('系统错误')
-                        }
-                    },
-                    error:
-                        function (msg) {
-                            alert(msg)
-                        }
-                })
+                url: "/logout",
+                type: "POST",
+                dataType: "text",
+                success: function (data) {
+                    {#alert(data);#}
+                    if (data == 'success') {
+                        window.location.href = '/login';
+                    } else {
+                        alert('系统错误')
+                    }
+                },
+                error:
+                    function (msg) {
+                        alert(msg)
+                    }
+            })
         })
     })
 
