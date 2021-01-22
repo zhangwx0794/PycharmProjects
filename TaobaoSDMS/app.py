@@ -8,6 +8,7 @@ from views.logout import logout
 from views.home import home
 from views.NF404 import NF404
 from models.downloadExcel import downloadExcel
+from models.downloadImportTemplate import downloadImportTemplate
 from views.repeTaskCheck import repeTaskCheck
 from views.search import search
 from views.importData import importData
@@ -27,6 +28,7 @@ app.register_blueprint(repeTaskCheck, url_prefix='/repeTaskCheck')
 app.register_blueprint(downloadExcel, url_prefix='/downloadExcel')
 app.register_blueprint(search, url_prefix='/search')
 app.register_blueprint(importData, url_prefix='/importData')
+app.register_blueprint(downloadImportTemplate, url_prefix='/downloadImportTemplate')
 
 
 if __name__ == '__main__':
