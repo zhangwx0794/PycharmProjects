@@ -27,25 +27,28 @@ def _downloadExcel():
     handlerName = request.args.get('handlerName')
     custName = request.args.get('custName')
     opWechatId = request.args.get('opWechatId')
+    note = request.args.get('note')
     searchSql = ''
     if goodsName != '':
-        searchSql = searchSql + ' and goodsName like ' + '\'%' + goodsName + '%\''
+        searchSql = searchSql + ' and goodsName like ' + '\'' + goodsName + '%\''
     if goodsKey != '':
-        searchSql = searchSql + ' and goodsKey like ' + '\'%' + goodsKey + '%\''
+        searchSql = searchSql + ' and goodsKey like ' + '\'' + goodsKey + '%\''
     if wangwangId != '':
-        searchSql = searchSql + ' and wangwangId like ' + '\'%' + wangwangId + '%\''
+        searchSql = searchSql + ' and wangwangId like ' + '\'' + wangwangId + '%\''
     if orderId != '':
-        searchSql = searchSql + ' and orderId like ' + '\'%' + orderId + '%\''
+        searchSql = searchSql + ' and orderId like ' + '\'' + orderId + '%\''
     if shopName != '':
-        searchSql = searchSql + ' and shopName like ' + '\'%' + shopName + '%\''
+        searchSql = searchSql + ' and shopName like ' + '\'' + shopName + '%\''
     if date != '':
-        searchSql = searchSql + ' and date like ' + '\'%' + date + '%\''
+        searchSql = searchSql + ' and date like ' + '\'' + date + '%\''
     if handlerName != '':
-        searchSql = searchSql + ' and handlerName like ' + '\'%' + handlerName + '%\''
+        searchSql = searchSql + ' and handlerName like ' + '\'' + handlerName + '%\''
     if custName != '':
-        searchSql = searchSql + ' and custName like ' + '\'%' + custName + '%\''
+        searchSql = searchSql + ' and custName like ' + '\'' + custName + '%\''
     if opWechatId != '':
-        searchSql = searchSql + ' and opWechatId like ' + '\'%' + opWechatId + '%\''
+        searchSql = searchSql + ' and opWechatId like ' + '\'' + opWechatId + '%\''
+    if note != '':
+        searchSql = searchSql + ' and note like ' + '\'' + note + '%\''
 
     # 根据UUID查询角色信息，如果是管理员则导出内部可见列，普通角色不导出内部可见列
     username = getSessionValue('username')
